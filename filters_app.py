@@ -23,16 +23,23 @@ def HDR(img, sigma_s=10, sigma_r=0.1):
 
 
 def stylezation(img, sigma_s=10, sigma_r=0.1):
-    blur = cv2.GaussianBlur(img, (5, 5), 0, 0)
-    style = cv2.stylization(blur, sigma_s=sigma_s, sigma_r=sigma_r)
+    #blur = cv2.GaussianBlur(img, (5, 5), 0, 0)
+    style = cv2.stylization(img, sigma_s=sigma_s, sigma_r=sigma_r)
     return style
 
 
 def brightness(img, level):
     bright = cv2.convertScaleAbs(img, beta=level)
     return bright
-
-
+def removenoise(img):
+    denoised=cv2.bilateralFilter(img, 15,100,75)  
+    return denoised
+def boxFilter(img):
+    blured_box = cv2.boxFilter(img, 0, (7,7), img, (-7,-7),  cv2.BORDER_DEFAULT)  
+    return blured_box
+def edgedetection(img):
+    img_edges = cv2.Canny(img, 50, 50)
+    return img_edges
 upload = st.file_uploader("Please Upload an image", type=["png", "jpeg", "jpg", "webp"])
 
 if upload is not None:
@@ -47,7 +54,7 @@ if upload is not None:
         st.header("Original Image")
         st.image(img_array, channels="BGR", use_column_width=True)
 
-    options = st.selectbox("Select filter", ("None", "Black&White", "pencilsketch", "HDR", "stylezation", "brightness"))
+    options = st.selectbox("Select filter", ("None", "Black&White", "pencilsketch", "HDR", "stylezation", "brightness","remove noise","average blur","edge detection"))
     output_flag = 1
     color = "BGR"
     if options == "None":
@@ -70,6 +77,13 @@ if upload is not None:
     elif options == "brightness":
         level = st.slider("level", -50, 50, 2)
         output = brightness(img_array, level)
+    elif options=="remove noise":
+        output=removenoise(img_array)
+    elif options=="average blur":
+        output=boxFilter(img_array)
+    elif options=="edge detection":
+        output=edgedetection(img_array)
+        color="gray"
     with filtered_image:
         st.header("Filtered Image")
         st.image(output, channels=color, use_column_width=True)
