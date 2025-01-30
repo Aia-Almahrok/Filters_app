@@ -1,5 +1,5 @@
 streamlit
-opencv-ontrib-python
-opencv-python
+opencv-contrib-python==4.11.0.86
+opencv-python==4.11.0.86
 numpy
 pillow
